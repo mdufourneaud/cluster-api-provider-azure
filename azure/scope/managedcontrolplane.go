@@ -426,13 +426,8 @@ func (s *ManagedControlPlaneScope) ManagedClusterSpec(ctx context.Context) azure
 		Version:           strings.TrimPrefix(s.ControlPlane.Spec.Version, "v"),
 		SSHPublicKey:      s.ControlPlane.Spec.SSHPublicKey,
 		DNSServiceIP:      s.ControlPlane.Spec.DNSServiceIP,
-		VnetSubnetID: azure.SubnetID(
-			s.ControlPlane.Spec.SubscriptionID,
-			s.VNetSpec().ResourceGroupName(),
-			s.ControlPlane.Spec.VirtualNetwork.Name,
-			s.ControlPlane.Spec.VirtualNetwork.Subnet.Name,
-		),
-		GetAllAgentPools: s.GetAllAgentPoolSpecs,
+		VnetSubnetID:      nil,
+		GetAllAgentPools:  s.GetAllAgentPoolSpecs,
 	}
 
 	if s.ControlPlane.Spec.NetworkPlugin != nil {

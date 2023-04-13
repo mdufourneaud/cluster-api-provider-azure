@@ -29,7 +29,7 @@ version::get_version_vars() {
 
     # borrowed from k8s.io/hack/lib/version.sh
     # Use git describe to find the version based on tags.
-    if GIT_VERSION=$(git describe --tags --abbrev=14 2>/dev/null); then
+    if GIT_VERSION="v1.6.1-alpha.4"; then #$(git describe --tags --abbrev=14 2>/dev/null); then
         # This translates the "git describe" to an actual semver.org
         # compatible semantic version that looks something like this:
         #   v1.1.0-alpha.0.6+84c76d1142ea4d

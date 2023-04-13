@@ -53,7 +53,7 @@ type AgentPoolSpec struct {
 	OSDiskSizeGB int32
 
 	// VnetSubnetID is the Azure Resource ID for the subnet which should contain nodes.
-	VnetSubnetID string
+	VnetSubnetID *string
 
 	// Mode represents mode of an agent pool. Possible values include: 'System', 'User'.
 	Mode string
@@ -197,10 +197,10 @@ func (s *AgentPoolSpec) Parameters(existing interface{}) (params interface{}, er
 	if s.SKU != "" {
 		sku = &s.SKU
 	}
-	var vnetSubnetID *string
+	/*var vnetSubnetID *string
 	if s.VnetSubnetID != "" {
 		vnetSubnetID = &s.VnetSubnetID
-	}
+	}*/
 
 	return containerservice.AgentPool{
 		ManagedClusterAgentPoolProfileProperties: &containerservice.ManagedClusterAgentPoolProfileProperties{
@@ -221,7 +221,7 @@ func (s *AgentPoolSpec) Parameters(existing interface{}) (params interface{}, er
 			ScaleSetPriority:     containerservice.ScaleSetPriority(to.String(s.ScaleSetPriority)),
 			Type:                 containerservice.AgentPoolTypeVirtualMachineScaleSets,
 			VMSize:               sku,
-			VnetSubnetID:         vnetSubnetID,
+			VnetSubnetID:         nil /*vnetSubnetID*/,
 			EnableNodePublicIP:   s.EnableNodePublicIP,
 			NodePublicIPPrefixID: s.NodePublicIPPrefixID,
 		},

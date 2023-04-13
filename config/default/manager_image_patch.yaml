@@ -8,5 +8,5 @@ spec:
     spec:
       containers:
       # Change the value of image field below to your controller image URL
-      - image: gcr.io/k8s-staging-cluster-api-azure/cluster-api-azure-controller:latest
+      - image: docker.io/mdufourneaud4datagalaxy/cluster-api-azure-controller-amd64:v1.6.1-alpha.4
         name: manager
