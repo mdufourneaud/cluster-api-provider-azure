@@ -156,19 +156,14 @@ func buildAgentPoolSpec(managedControlPlane *infrav1exp.AzureManagedControlPlane
 	}
 
 	agentPoolSpec := &agentpools.AgentPoolSpec{
-		Name:          to.String(managedMachinePool.Spec.Name),
-		ResourceGroup: managedControlPlane.Spec.ResourceGroupName,
-		Cluster:       managedControlPlane.Name,
-		SKU:           managedMachinePool.Spec.SKU,
-		Replicas:      replicas,
-		Version:       normalizedVersion,
-		OSType:        managedMachinePool.Spec.OSType,
-		VnetSubnetID: azure.SubnetID(
-			managedControlPlane.Spec.SubscriptionID,
-			managedControlPlane.Spec.VirtualNetwork.ResourceGroup,
-			managedControlPlane.Spec.VirtualNetwork.Name,
-			managedControlPlane.Spec.VirtualNetwork.Subnet.Name,
-		),
+		Name:                 to.String(managedMachinePool.Spec.Name),
+		ResourceGroup:        managedControlPlane.Spec.ResourceGroupName,
+		Cluster:              managedControlPlane.Name,
+		SKU:                  managedMachinePool.Spec.SKU,
+		Replicas:             replicas,
+		Version:              normalizedVersion,
+		OSType:               managedMachinePool.Spec.OSType,
+		VnetSubnetID:         nil,
 		Mode:                 managedMachinePool.Spec.Mode,
 		MaxPods:              managedMachinePool.Spec.MaxPods,
 		AvailabilityZones:    managedMachinePool.Spec.AvailabilityZones,

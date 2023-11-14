@@ -17,24 +17,12 @@ limitations under the License.
 package v1beta1
 
 import (
-	"encoding/base64"
-
-	"golang.org/x/crypto/ssh"
 	"k8s.io/apimachinery/pkg/util/uuid"
 	infrav1 "sigs.k8s.io/cluster-api-provider-azure/api/v1beta1"
-	utilSSH "sigs.k8s.io/cluster-api-provider-azure/util/ssh"
 )
 
 // SetDefaultSSHPublicKey sets the default SSHPublicKey for an AzureMachinePool.
 func (amp *AzureMachinePool) SetDefaultSSHPublicKey() error {
-	if sshKeyData := amp.Spec.Template.SSHPublicKey; sshKeyData == "" {
-		_, publicRsaKey, err := utilSSH.GenerateSSHKey()
-		if err != nil {
-			return err
-		}
-
-		amp.Spec.Template.SSHPublicKey = base64.StdEncoding.EncodeToString(ssh.MarshalAuthorizedKey(publicRsaKey))
-	}
 	return nil
 }
 
