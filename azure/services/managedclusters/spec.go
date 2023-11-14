@@ -18,7 +18,6 @@ package managedclusters
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"net"
 	"time"
@@ -45,7 +44,7 @@ type ManagedClusterSpec struct {
 	NodeResourceGroup string
 
 	// VnetSubnetID is the Azure Resource ID for the subnet which should contain nodes.
-	VnetSubnetID string
+	VnetSubnetID *string
 
 	// Location is a string matching one of the canonical Azure region names. Examples: "westus2", "eastus".
 	Location string
@@ -258,10 +257,6 @@ func (s *ManagedClusterSpec) Parameters(ctx context.Context, existing interface{
 	ctx, log, done := tele.StartSpanWithLogger(ctx, "managedclusters.Service.Parameters")
 	defer done()
 
-	decodedSSHPublicKey, err := base64.StdEncoding.DecodeString(s.SSHPublicKey)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to decode SSHPublicKey")
-	}
 	managedCluster := containerservice.ManagedCluster{
 		Identity: &containerservice.ManagedClusterIdentity{
 			Type: containerservice.ResourceIdentityTypeSystemAssigned,
@@ -273,16 +268,7 @@ func (s *ManagedClusterSpec) Parameters(ctx context.Context, existing interface{
 			EnableRBAC:        to.BoolPtr(true),
 			DNSPrefix:         &s.Name,
 			KubernetesVersion: &s.Version,
-			LinuxProfile: &containerservice.LinuxProfile{
-				AdminUsername: to.StringPtr(azure.DefaultAKSUserName),
-				SSH: &containerservice.SSHConfiguration{
-					PublicKeys: &[]containerservice.SSHPublicKey{
-						{
-							KeyData: to.StringPtr(string(decodedSSHPublicKey)),
-						},
-					},
-				},
-			},
+			LinuxProfile:      nil,
 			ServicePrincipalProfile: &containerservice.ManagedClusterServicePrincipalProfile{
 				ClientID: to.StringPtr("msi"),
 			},

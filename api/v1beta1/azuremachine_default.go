@@ -17,25 +17,13 @@ limitations under the License.
 package v1beta1
 
 import (
-	"encoding/base64"
-
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2021-11-01/compute"
-	"golang.org/x/crypto/ssh"
 	"k8s.io/apimachinery/pkg/util/uuid"
-	utilSSH "sigs.k8s.io/cluster-api-provider-azure/util/ssh"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 // SetDefaultSSHPublicKey sets the default SSHPublicKey for an AzureMachine.
 func (s *AzureMachineSpec) SetDefaultSSHPublicKey() error {
-	if sshKeyData := s.SSHPublicKey; sshKeyData == "" {
-		_, publicRsaKey, err := utilSSH.GenerateSSHKey()
-		if err != nil {
-			return err
-		}
-
-		s.SSHPublicKey = base64.StdEncoding.EncodeToString(ssh.MarshalAuthorizedKey(publicRsaKey))
-	}
 	return nil
 }
 
