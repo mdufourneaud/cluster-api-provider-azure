@@ -449,14 +449,9 @@ func (s *ManagedControlPlaneScope) ManagedClusterSpec() azure.ResourceSpecGetter
 		Version:           strings.TrimPrefix(s.ControlPlane.Spec.Version, "v"),
 		SSHPublicKey:      s.ControlPlane.Spec.SSHPublicKey,
 		DNSServiceIP:      s.ControlPlane.Spec.DNSServiceIP,
-		VnetSubnetID: azure.SubnetID(
-			s.ControlPlane.Spec.SubscriptionID,
-			s.VNetSpec().ResourceGroupName(),
-			s.ControlPlane.Spec.VirtualNetwork.Name,
-			s.ControlPlane.Spec.VirtualNetwork.Subnet.Name,
-		),
-		GetAllAgentPools: s.GetAllAgentPoolSpecs,
-		OutboundType:     s.ControlPlane.Spec.OutboundType,
+		VnetSubnetID:      nil,
+		GetAllAgentPools:  s.GetAllAgentPoolSpecs,
+		OutboundType:      s.ControlPlane.Spec.OutboundType,
 	}
 
 	if s.ControlPlane.Spec.NetworkPlugin != nil {
