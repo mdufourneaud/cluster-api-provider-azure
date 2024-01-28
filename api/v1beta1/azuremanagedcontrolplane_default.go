@@ -17,12 +17,9 @@ limitations under the License.
 package v1beta1
 
 import (
-	"encoding/base64"
 	"fmt"
 
-	"golang.org/x/crypto/ssh"
 	"k8s.io/utils/pointer"
-	utilSSH "sigs.k8s.io/cluster-api-provider-azure/util/ssh"
 )
 
 const (
@@ -34,15 +31,6 @@ const (
 
 // setDefaultSSHPublicKey sets the default SSHPublicKey for an AzureManagedControlPlane.
 func (m *AzureManagedControlPlane) setDefaultSSHPublicKey() error {
-	if sshKeyData := m.Spec.SSHPublicKey; sshKeyData == "" {
-		_, publicRsaKey, err := utilSSH.GenerateSSHKey()
-		if err != nil {
-			return err
-		}
-
-		m.Spec.SSHPublicKey = base64.StdEncoding.EncodeToString(ssh.MarshalAuthorizedKey(publicRsaKey))
-	}
-
 	return nil
 }
 
