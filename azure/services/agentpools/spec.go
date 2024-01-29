@@ -83,7 +83,7 @@ type AgentPoolSpec struct {
 	OSDiskSizeGB int32
 
 	// VnetSubnetID is the Azure Resource ID for the subnet which should contain nodes.
-	VnetSubnetID string
+	VnetSubnetID *string
 
 	// Mode represents mode of an agent pool. Possible values include: 'System', 'User'.
 	Mode string
@@ -288,10 +288,6 @@ func (s *AgentPoolSpec) Parameters(ctx context.Context, existing interface{}) (p
 		// Make sure we send a non-nil, empty map if AdditionalTags are nil as this tells AKS to delete any existing tags.
 		tags = make(map[string]*string, 0)
 	}
-	var vnetSubnetID *string
-	if s.VnetSubnetID != "" {
-		vnetSubnetID = &s.VnetSubnetID
-	}
 
 	var kubeletConfig *armcontainerservice.KubeletConfig
 	if s.KubeletConfig != nil {
@@ -374,7 +370,7 @@ func (s *AgentPoolSpec) Parameters(ctx context.Context, existing interface{}) (p
 			SpotMaxPrice:         spotMaxPrice,
 			Type:                 ptr.To(armcontainerservice.AgentPoolTypeVirtualMachineScaleSets),
 			VMSize:               sku,
-			VnetSubnetID:         vnetSubnetID,
+			VnetSubnetID:         nil,
 			EnableNodePublicIP:   s.EnableNodePublicIP,
 			NodePublicIPPrefixID: s.NodePublicIPPrefixID,
 			Tags:                 tags,

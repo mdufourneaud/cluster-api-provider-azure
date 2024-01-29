@@ -18,7 +18,6 @@ package managedclusters
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"net"
 	"reflect"
@@ -49,7 +48,7 @@ type ManagedClusterSpec struct {
 	ClusterName string
 
 	// VnetSubnetID is the Azure Resource ID for the subnet which should contain nodes.
-	VnetSubnetID string
+	VnetSubnetID *string
 
 	// Location is a string matching one of the canonical Azure region names. Examples: "westus2", "eastus".
 	Location string
@@ -303,14 +302,6 @@ func (s *ManagedClusterSpec) Parameters(ctx context.Context, existing interface{
 	ctx, log, done := tele.StartSpanWithLogger(ctx, "managedclusters.Service.Parameters")
 	defer done()
 
-	var decodedSSHPublicKey []byte
-	if s.SSHPublicKey != "" {
-		decodedSSHPublicKey, err = base64.StdEncoding.DecodeString(s.SSHPublicKey)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to decode SSHPublicKey")
-		}
-	}
-
 	managedCluster := armcontainerservice.ManagedCluster{
 		Identity: &armcontainerservice.ManagedClusterIdentity{
 			Type: ptr.To(armcontainerservice.ResourceIdentityTypeSystemAssigned),
@@ -341,18 +332,7 @@ func (s *ManagedClusterSpec) Parameters(ctx context.Context, existing interface{
 		},
 	}
 
-	if decodedSSHPublicKey != nil {
-		managedCluster.Properties.LinuxProfile = &armcontainerservice.LinuxProfile{
-			AdminUsername: ptr.To(azure.DefaultAKSUserName),
-			SSH: &armcontainerservice.SSHConfiguration{
-				PublicKeys: []*armcontainerservice.SSHPublicKey{
-					{
-						KeyData: ptr.To(string(decodedSSHPublicKey)),
-					},
-				},
-			},
-		}
-	}
+	managedCluster.Properties.LinuxProfile = nil
 
 	if s.NetworkPluginMode != nil {
 		managedCluster.Properties.NetworkProfile.NetworkPluginMode = ptr.To(armcontainerservice.NetworkPluginMode(*s.NetworkPluginMode))
