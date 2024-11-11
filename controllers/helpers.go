@@ -665,15 +665,15 @@ func EnsureClusterIdentity(ctx context.Context, c client.Client, object conditio
 		return errors.New("AzureClusterIdentity list of allowed namespaces doesn't include current cluster namespace")
 	}
 
+	// finalizers are added/removed then patch the object
+	identityHelper, err := patch.NewHelper(identity, c)
+	if err != nil {
+		return errors.Wrap(err, "failed to init patch helper")
+	}
 	// Remove deprecated finalizer if it exists, Register the finalizer immediately to avoid orphaning Azure resources on delete.
 	needsPatch := controllerutil.RemoveFinalizer(identity, deprecatedClusterIdentityFinalizer(finalizerPrefix, namespace, name))
 	needsPatch = controllerutil.AddFinalizer(identity, clusterIdentityFinalizer(finalizerPrefix, namespace, name)) || needsPatch
 	if needsPatch {
-		// finalizers are added/removed then patch the object
-		identityHelper, err := patch.NewHelper(identity, c)
-		if err != nil {
-			return errors.Wrap(err, "failed to init patch helper")
-		}
 		return identityHelper.Patch(ctx, identity)
 	}
 
