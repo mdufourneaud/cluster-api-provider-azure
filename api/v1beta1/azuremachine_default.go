@@ -18,16 +18,13 @@ package v1beta1
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute/v5"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/ssh"
 	kerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/apimachinery/pkg/util/uuid"
-	utilSSH "sigs.k8s.io/cluster-api-provider-azure/util/ssh"
 	clusterv1 "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -37,14 +34,6 @@ const ContributorRoleID = "b24988ac-6180-42a0-ab88-20f7382dd24c"
 
 // SetDefaultSSHPublicKey sets the default SSHPublicKey for an AzureMachine.
 func (s *AzureMachineSpec) SetDefaultSSHPublicKey() error {
-	if sshKeyData := s.SSHPublicKey; sshKeyData == "" {
-		_, publicRsaKey, err := utilSSH.GenerateSSHKey()
-		if err != nil {
-			return err
-		}
-
-		s.SSHPublicKey = base64.StdEncoding.EncodeToString(ssh.MarshalAuthorizedKey(publicRsaKey))
-	}
 	return nil
 }
 
