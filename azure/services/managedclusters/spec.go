@@ -18,7 +18,6 @@ package managedclusters
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"net"
 
@@ -55,7 +54,7 @@ type ManagedClusterSpec struct {
 	ClusterName string
 
 	// VnetSubnetID is the Azure Resource ID for the subnet which should contain nodes.
-	VnetSubnetID string
+	VnetSubnetID *string
 
 	// Location is a string matching one of the canonical Azure region names. Examples: "westus2", "eastus".
 	Location string
@@ -468,26 +467,7 @@ func (s *ManagedClusterSpec) Parameters(ctx context.Context, existingObj genrunt
 	}
 	managedCluster.Spec.AutoScalerProfile = buildAutoScalerProfile(s.AutoScalerProfile)
 
-	var decodedSSHPublicKey []byte
-	if s.SSHPublicKey != "" {
-		decodedSSHPublicKey, err = base64.StdEncoding.DecodeString(s.SSHPublicKey)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to decode SSHPublicKey")
-		}
-	}
-
-	if decodedSSHPublicKey != nil {
-		managedCluster.Spec.LinuxProfile = &asocontainerservicev1.ContainerServiceLinuxProfile{
-			AdminUsername: ptr.To(azure.DefaultAKSUserName),
-			Ssh: &asocontainerservicev1.ContainerServiceSshConfiguration{
-				PublicKeys: []asocontainerservicev1.ContainerServiceSshPublicKey{
-					{
-						KeyData: ptr.To(string(decodedSSHPublicKey)),
-					},
-				},
-			},
-		}
-	}
+	managedCluster.Spec.LinuxProfile = nil
 
 	if s.NetworkPluginMode != nil {
 		managedCluster.Spec.NetworkProfile.NetworkPluginMode = ptr.To(asocontainerservicev1.ContainerServiceNetworkProfile_NetworkPluginMode(*s.NetworkPluginMode))
