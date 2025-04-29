@@ -87,7 +87,7 @@ type AgentPoolSpec struct {
 	OSDiskSizeGB int
 
 	// VnetSubnetID is the Azure Resource ID for the subnet which should contain nodes.
-	VnetSubnetID string
+	VnetSubnetID *string
 
 	// Mode represents mode of an agent pool. Possible values include: 'System', 'User'.
 	Mode string
@@ -266,11 +266,7 @@ func (s *AgentPoolSpec) Parameters(ctx context.Context, existingObj genruntime.M
 		agentPool.Spec.SpotMaxPrice = ptr.To(s.SpotMaxPrice.AsApproximateFloat64())
 	}
 
-	if s.VnetSubnetID != "" {
-		agentPool.Spec.VnetSubnetReference = &genruntime.ResourceReference{
-			ARMID: s.VnetSubnetID,
-		}
-	}
+	agentPool.Spec.VnetSubnetReference = nil
 
 	if s.NodePublicIPPrefixID != "" {
 		agentPool.Spec.NodePublicIPPrefixReference = &genruntime.ResourceReference{
